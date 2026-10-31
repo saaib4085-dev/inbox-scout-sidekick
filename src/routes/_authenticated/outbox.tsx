@@ -130,7 +130,7 @@ function ReviewCard({ row }: { row: Tables<"outbox"> }) {
         </label>
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {connected.length > 1 && (
-            <Select value={chosen} onValueChange={(v) => setProvider(v as MailProvider)}>
+            <Select value={chosen ?? ""} onValueChange={(v) => setProvider(v as MailProvider)}>
               <SelectTrigger className="h-9 w-32 rounded-full"><SelectValue /></SelectTrigger>
               <SelectContent className="rounded-2xl">
                 {connected.map((p) => <SelectItem key={p} value={p}>{PROVIDER_LABEL[p]}</SelectItem>)}

@@ -48,8 +48,8 @@ function ComposePage() {
   const [incoming, setIncoming] = useState("");
   const [sender, setSender] = useState("");
   const [details, setDetails] = useState("");
-  const [tone, setTone] = useState(TONES[0]);
-  const [strategy, setStrategy] = useState(STRATEGIES[0]);
+  const [tone, setTone] = useState<string>(TONES[0]!);
+  const [strategy, setStrategy] = useState<string>(STRATEGIES[0]!);
   const [customPrompt, setCustomPrompt] = useState("");
   const [busy, setBusy] = useState(false);
   const [drafts, setDrafts] = useState<DraftOption[]>([]);
@@ -61,7 +61,7 @@ function ComposePage() {
     if (search.lead) {
       setMode("outreach");
       setLeadId(search.lead);
-      setStrategy(OUTREACH_STRATEGIES[0]);
+      setStrategy(OUTREACH_STRATEGIES[0]!);
     }
   }, [search.lead]);
 
@@ -104,6 +104,7 @@ function ComposePage() {
     setRefining(`${i}-${action}`);
     try {
       const d = drafts[i];
+      if (!d) return;
       const res = await refine({ data: { subject: d.subject, body: d.body, action } });
       if (res) setDrafts(drafts.map((x, j) => (j === i ? { ...x, ...res } : x)));
       toast.success("Draft refined");
@@ -125,7 +126,7 @@ function ComposePage() {
       subject: d.subject,
       body: d.body,
     });
-    if (error) return toast.error("Could not add to outbox");
+    if (error) { toast.error("Could not add to outbox"); return; }
     qc.invalidateQueries({ queryKey: ["outbox"] });
     toast.success("Added to outbox for review", {
       action: { label: "Open outbox", onClick: () => (window.location.href = "/outbox") },
@@ -145,7 +146,7 @@ function ComposePage() {
                 key={m}
                 onClick={() => {
                   setMode(m);
-                  setStrategy(m === "outreach" ? OUTREACH_STRATEGIES[0] : STRATEGIES[0]);
+                  setStrategy((m === "outreach" ? OUTREACH_STRATEGIES[0] : STRATEGIES[0])!);
                 }}
                 className={cn(
                   "rounded-full px-4 py-1.5 text-sm font-medium transition",
@@ -179,7 +180,7 @@ function ComposePage() {
               <div className="space-y-1.5">
                 <Label>Lead</Label>
                 {leads.data?.length ? (
-                  <Select value={leadId} onValueChange={setLeadId}>
+                  <Select value={leadId ?? ""} onValueChange={setLeadId}>
                     <SelectTrigger className="rounded-xl">
                       <SelectValue placeholder="Choose a lead" />
                     </SelectTrigger>

@@ -220,7 +220,7 @@ function ManualPanel({ onDone }: { onDone: () => void }) {
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) return;
     const { error } = await supabase.from("leads").insert({ ...f, user_id: u.user.id, source: "manual" });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Contact added");
     setF(empty);
     onDone();

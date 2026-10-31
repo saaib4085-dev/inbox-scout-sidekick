@@ -30,7 +30,7 @@ export function AppShell() {
   const wallet = useWallet();
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const initial = (user?.user_metadata?.full_name || user?.email || "?").slice(0, 1).toUpperCase();
+  const initial = (user?.user_metadata?.["full_name"] || user?.email || "?").slice(0, 1).toUpperCase();
 
   async function signOut() {
     await supabase.auth.signOut();

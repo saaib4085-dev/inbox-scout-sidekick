@@ -118,8 +118,8 @@ export const askAssistant = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => askInput.parse(d))
   .handler(async ({ data, context }) => {
-    const last = data.messages[data.messages.length - 1];
-    if (last.role !== "user" || !last.content.trim()) throw new Error("Type a question first.");
+    const last = data.messages.at(-1);
+    if (!last || last.role !== "user" || !last.content.trim()) throw new Error("Type a question first.");
     const profile = await loadProfile(context.supabase, context.userId);
     try {
       const answer = await withCredits(context, CREDIT_COSTS.aiQuestion, "AI assistant question", () =>

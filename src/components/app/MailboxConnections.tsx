@@ -63,7 +63,7 @@ export function MailboxConnections() {
 
   async function connect(provider: MailProvider) {
     const popup = window.open("", "inboxhero-oauth", "width=600,height=720");
-    if (!popup) return toast.error("Allow popups to connect your mailbox.");
+    if (!popup) { toast.error("Allow popups to connect your mailbox."); return; }
     setBusy(provider);
     try {
       const { authorizationUrl } = await start({ data: { provider } });

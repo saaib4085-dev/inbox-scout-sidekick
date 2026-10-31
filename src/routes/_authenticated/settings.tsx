@@ -47,7 +47,7 @@ function SettingsPage() {
       .update({ display_name: name, signature, brand_voice: voice, updated_at: new Date().toISOString() })
       .eq("id", profile.data.id);
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["profile"] });
     toast.success("Settings saved");
   }

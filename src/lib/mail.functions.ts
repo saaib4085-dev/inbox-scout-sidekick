@@ -73,7 +73,7 @@ export const startMailboxConnect = createServerFn({ method: "POST" })
       appUserId: context.userId,
       clientAPIKey: clientKey,
       returnUrl,
-      connectionAPIKey: existing ?? undefined,
+      ...(existing ? { connectionAPIKey: existing } : {}),
       credentialsConfiguration: { scopes: [...p.scopes], ...p.extra },
     });
     return { authorizationUrl };

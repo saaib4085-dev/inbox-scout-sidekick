@@ -65,7 +65,7 @@ export async function runClaude(opts: {
     if (status === 403) throw new AiError("The AI service declined this request.", 403);
     throw new AiError("The AI could not complete this request.", status);
   }
-  const finish = await result.finishReason.catch(() => undefined);
+  const finish = await Promise.resolve(result.finishReason).catch(() => undefined);
   if ((finish as string) === "content-filter" || !text.trim()) {
     throw new AiError("The AI declined to answer this request.", 422);
   }
