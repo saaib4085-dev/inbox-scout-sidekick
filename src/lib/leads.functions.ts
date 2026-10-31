@@ -50,7 +50,7 @@ export const searchLeads = createServerFn({ method: "POST" })
         }
         const items = (await res.json()) as any[];
         // Only keep businesses with no existing website
-        const noSite = items.filter((i) => !i.website && !i.url?.includes?.("http") === false ? false : !i.website);
+        const noSite = items.filter((i) => !String(i.website ?? "").trim());
         const rows = noSite.map((i) => ({
           user_id: context.userId,
           name: String(i.title ?? i.name ?? "Unnamed business").slice(0, 200),
