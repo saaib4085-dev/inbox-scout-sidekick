@@ -14,13 +14,278 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      app_user_connections: {
+        Row: {
+          connection_key_ciphertext: string
+          connector_id: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connection_key_ciphertext: string
+          connector_id: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connection_key_ciphertext?: string
+          connector_id?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      credit_ledger: {
+        Row: {
+          amount: number
+          breakdown: Json
+          created_at: string
+          id: string
+          kind: string
+          reason: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          breakdown?: Json
+          created_at?: string
+          id?: string
+          kind: string
+          reason?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          breakdown?: Json
+          created_at?: string
+          id?: string
+          kind?: string
+          reason?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      credit_wallets: {
+        Row: {
+          bonus_credits: number
+          period_end: string | null
+          plan: string
+          subscription_credits: number
+          topup_credits: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bonus_credits?: number
+          period_end?: string | null
+          plan?: string
+          subscription_credits?: number
+          topup_credits?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bonus_credits?: number
+          period_end?: string | null
+          plan?: string
+          subscription_credits?: number
+          topup_credits?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      drafts: {
+        Row: {
+          created_at: string
+          id: string
+          incoming_email: string
+          lead_id: string | null
+          mode: string
+          options: Json
+          sender: string
+          strategy: string
+          tone: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          incoming_email?: string
+          lead_id?: string | null
+          mode?: string
+          options?: Json
+          sender?: string
+          strategy?: string
+          tone?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          incoming_email?: string
+          lead_id?: string | null
+          mode?: string
+          options?: Json
+          sender?: string
+          strategy?: string
+          tone?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          address: string
+          category: string
+          city: string
+          company: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          notes: string
+          phone: string
+          source: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          address?: string
+          category?: string
+          city?: string
+          company?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name: string
+          notes?: string
+          phone?: string
+          source?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          category?: string
+          city?: string
+          company?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string
+          phone?: string
+          source?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      outbox: {
+        Row: {
+          body: string
+          created_at: string
+          error: string | null
+          id: string
+          lead_id: string | null
+          provider: string | null
+          sent_at: string | null
+          status: string
+          subject: string
+          to_email: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          lead_id?: string | null
+          provider?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          to_email?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          lead_id?: string | null
+          provider?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          to_email?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          brand_voice: string
+          created_at: string
+          display_name: string | null
+          id: string
+          signature: string
+          updated_at: string
+        }
+        Insert: {
+          brand_voice?: string
+          created_at?: string
+          display_name?: string | null
+          id: string
+          signature?: string
+          updated_at?: string
+        }
+        Update: {
+          brand_voice?: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          signature?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_topup: {
+        Args: { _credits: number; _user_id: string }
+        Returns: undefined
+      }
+      apply_subscription: {
+        Args: {
+          _credits: number
+          _period_end: string
+          _plan: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
+      refund_credits: {
+        Args: { _ledger_id: string; _user_id: string }
+        Returns: undefined
+      }
+      reserve_credits: {
+        Args: { _amount: number; _reason: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
