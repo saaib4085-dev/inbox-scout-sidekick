@@ -50,18 +50,24 @@ function useCheckout() {
 function CreditsPage() {
   const search = Route.useSearch();
   const qc = useQueryClient();
+  const navigate = useNavigate();
+  const confirm = useServerFn(confirmCheckout);
   const [tab, setTab] = useState<"overview" | "packages">(search.tab ?? "overview");
   useEffect(() => {
-    if (search.checkout === "success") {
-      toast.success("Payment received — your credits will appear in a moment.");
-      const t = setTimeout(() => {
+    const sessionId = search.checkout;
+    if (!sessionId?.startsWith("cs_")) return;
+    navigate({ to: "/credits", search: {}, replace: true });
+    confirm({ data: { sessionId } })
+      .then((r) => {
+        if (r?.ok) toast.success("Payment received — your credits have been added.");
+        else toast.info("Payment is still processing — credits will appear shortly.");
+      })
+      .catch((e) => toast.error((e as Error).message))
+      .finally(() => {
         qc.invalidateQueries({ queryKey: ["wallet"] });
         qc.invalidateQueries({ queryKey: ["ledger"] });
-      }, 3000);
-      return () => clearTimeout(t);
-    }
-    return undefined;
-  }, [search.checkout, qc]);
+      });
+  }, [search.checkout]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
       <aside className="h-fit rounded-[1.75rem] border bg-card p-3 shadow-soft">
