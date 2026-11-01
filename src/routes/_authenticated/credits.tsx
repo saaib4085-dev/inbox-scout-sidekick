@@ -91,6 +91,7 @@ function CreditsPage() {
 
 function Overview({ onPackages }: { onPackages: () => void }) {
   const wallet = useWallet();
+  const portal = useServerFn(createBillingPortal);
   const ledger = useLedger(50);
   const w = wallet.data;
   const cover = creditsCover(w?.total ?? 0);
@@ -107,9 +108,16 @@ function Overview({ onPackages }: { onPackages: () => void }) {
                 {plan.name} plan{w?.periodEnd ? ` · renews ${format(new Date(w.periodEnd), "d MMM yyyy")}` : ""}
               </p>
             </div>
-            <Button onClick={onPackages} variant="secondary" className="rounded-full">
-              <Plus className="h-4 w-4" /> Get credits
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button onClick={onPackages} variant="secondary" className="rounded-full">
+                <Plus className="h-4 w-4" /> Get credits
+              </Button>
+              {w?.plan && w.plan !== "free" && (
+                <Button onClick={() => openStripe(() => portal())} variant="secondary" className="rounded-full">
+                  <CreditCard className="h-4 w-4" /> Manage billing
+                </Button>
+              )}
+            </div>
           </div>
           <div className="mt-6 grid grid-cols-3 gap-3">
             {[
@@ -176,6 +184,7 @@ function Overview({ onPackages }: { onPackages: () => void }) {
 function Packages() {
   const [billing, setBilling] = useState<"monthly" | "onetime">("monthly");
   const wallet = useWallet();
+  const checkout = useCheckout();
   const strip =
     billing === "monthly"
       ? [
