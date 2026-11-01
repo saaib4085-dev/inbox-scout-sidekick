@@ -23,7 +23,7 @@ export async function stripeRequest<T = any>(method: "GET" | "POST", path: strin
   const res = await fetch(url, {
     method,
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/x-www-form-urlencoded" },
-    body: method === "POST" ? body : undefined,
+    body: method === "POST" ? (body ?? null) : null,
   });
   const json = (await res.json()) as any;
   if (!res.ok) {
