@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { createBillingPortal, createCheckout } from "@/lib/stripe.functions";
 import { format } from "date-fns";
 import { Check, Clock, CreditCard, LayoutGrid, Package, Plus, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -11,7 +14,7 @@ import { CREDIT_COSTS, PLANS, TOPUP_PACK, creditsCover, formatCredits } from "@/
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/credits")({
-  validateSearch: z.object({ tab: z.enum(["overview", "packages"]).optional() }),
+  validateSearch: z.object({ tab: z.enum(["overview", "packages"]).optional(), checkout: z.string().optional() }),
   head: () => ({
     meta: [
       { title: "Credits — InboxHero" },
@@ -246,7 +249,7 @@ function Packages() {
                 ]}
                 cta={current ? "Current plan" : id === "free" ? "Included" : `Subscribe to ${p.name}`}
                 disabled={current || id === "free"}
-                onClick={() => startCheckout(`${p.name} (€${p.priceEur}/month)`)}
+                onClick={() => checkout(id as Product)}
               />
             );
           })}
@@ -268,7 +271,7 @@ function Packages() {
               "Works on any plan, including Free",
             ]}
             cta="Buy"
-            onClick={() => startCheckout(`a ${formatCredits(TOPUP_PACK.credits)}-credit top-up (€${TOPUP_PACK.priceEur})`)}
+            onClick={() => checkout("topup")}
           />
         </div>
       )}
