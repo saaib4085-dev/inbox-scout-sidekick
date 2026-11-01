@@ -23,15 +23,42 @@ export const Route = createFileRoute("/_authenticated/credits")({
   component: CreditsPage,
 });
 
-function startCheckout(label: string) {
-  toast.info(`Checkout for ${label} isn't switched on yet`, {
-    description: "Payments will open here as soon as they're activated for InboxHero.",
-  });
+type Product = "pro" | "business" | "topup";
+
+/** Opens Stripe Checkout in a new tab (it can't load inside the editor preview frame). */
+async function openStripe(getUrl: () => Promise<{ url: string } | undefined>) {
+  const tab = window.open("", "_blank");
+  try {
+    const res = await getUrl();
+    if (!res?.url) throw new Error("Couldn't start checkout.");
+    if (tab) tab.location.href = res.url;
+    else window.location.href = res.url;
+  } catch (e) {
+    tab?.close();
+    toast.error((e as Error).message);
+  }
+}
+
+function useCheckout() {
+  const checkout = useServerFn(createCheckout);
+  return (product: Product) => openStripe(() => checkout({ data: { product } }));
 }
 
 function CreditsPage() {
   const search = Route.useSearch();
+  const qc = useQueryClient();
   const [tab, setTab] = useState<"overview" | "packages">(search.tab ?? "overview");
+  useEffect(() => {
+    if (search.checkout === "success") {
+      toast.success("Payment received — your credits will appear in a moment.");
+      const t = setTimeout(() => {
+        qc.invalidateQueries({ queryKey: ["wallet"] });
+        qc.invalidateQueries({ queryKey: ["ledger"] });
+      }, 3000);
+      return () => clearTimeout(t);
+    }
+    return undefined;
+  }, [search.checkout, qc]);
   return (
     <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
       <aside className="h-fit rounded-[1.75rem] border bg-card p-3 shadow-soft">
