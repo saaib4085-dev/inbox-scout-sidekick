@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { stripeRequest } from "./stripe.server";
 import { PLANS, TOPUP_PACK } from "./credits";
+import { fulfillSubscriptionInvoice, fulfillTopupSession } from "./stripe-fulfill.server";
 
 function appOrigin() {
   const request = getRequest();
@@ -39,7 +40,7 @@ export const createCheckout = createServerFn({ method: "POST" })
     const common = {
       customer,
       client_reference_id: context.userId,
-      success_url: `${origin}/credits?checkout=success`,
+      success_url: `${origin}/credits?checkout={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/credits?tab=packages`,
       allow_promotion_codes: true,
     };
@@ -98,4 +99,19 @@ export const createBillingPortal = createServerFn({ method: "POST" })
       return_url: `${appOrigin()}/credits`,
     });
     return { url: s.url };
+  });
+
+/** Called when the user returns from Checkout: confirms the payment with Stripe and adds credits once. */
+export const confirmCheckout = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ sessionId: z.string().regex(/^cs_[A-Za-z0-9_]+$/).max(300) }).parse(d))
+  .handler(async ({ data, context }) => {
+    const session = await stripeRequest("GET", `/checkout/sessions/${data.sessionId}`);
+    if (session.client_reference_id !== context.userId) throw new Error("This checkout belongs to another account.");
+    if (session.mode === "payment") return { ok: await fulfillTopupSession(session, context.userId) };
+    if (session.mode === "subscription" && session.invoice) {
+      const invoiceId = typeof session.invoice === "string" ? session.invoice : session.invoice.id;
+      return { ok: await fulfillSubscriptionInvoice(invoiceId, context.userId) };
+    }
+    return { ok: false };
   });
