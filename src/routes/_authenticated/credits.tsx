@@ -1,5 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { confirmCheckout, createBillingPortal, createCheckout } from "@/lib/stripe.functions";
 import { format } from "date-fns";
 import { Check, Clock, CreditCard, LayoutGrid, Package, Plus, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -11,7 +14,7 @@ import { CREDIT_COSTS, PLANS, TOPUP_PACK, creditsCover, formatCredits } from "@/
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/credits")({
-  validateSearch: z.object({ tab: z.enum(["overview", "packages"]).optional() }),
+  validateSearch: z.object({ tab: z.enum(["overview", "packages"]).optional(), checkout: z.string().optional() }),
   head: () => ({
     meta: [
       { title: "Credits — InboxHero" },
@@ -23,15 +26,48 @@ export const Route = createFileRoute("/_authenticated/credits")({
   component: CreditsPage,
 });
 
-function startCheckout(label: string) {
-  toast.info(`Checkout for ${label} isn't switched on yet`, {
-    description: "Payments will open here as soon as they're activated for InboxHero.",
-  });
+type Product = "pro" | "business" | "topup";
+
+/** Opens Stripe Checkout in a new tab (it can't load inside the editor preview frame). */
+async function openStripe(getUrl: () => Promise<{ url: string } | undefined>) {
+  const tab = window.open("", "_blank");
+  try {
+    const res = await getUrl();
+    if (!res?.url) throw new Error("Couldn't start checkout.");
+    if (tab) tab.location.href = res.url;
+    else window.location.href = res.url;
+  } catch (e) {
+    tab?.close();
+    toast.error((e as Error).message);
+  }
+}
+
+function useCheckout() {
+  const checkout = useServerFn(createCheckout);
+  return (product: Product) => openStripe(() => checkout({ data: { product } }));
 }
 
 function CreditsPage() {
   const search = Route.useSearch();
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const confirm = useServerFn(confirmCheckout);
   const [tab, setTab] = useState<"overview" | "packages">(search.tab ?? "overview");
+  useEffect(() => {
+    const sessionId = search.checkout;
+    if (!sessionId?.startsWith("cs_")) return;
+    navigate({ to: "/credits", search: {}, replace: true });
+    confirm({ data: { sessionId } })
+      .then((r) => {
+        if (r?.ok) toast.success("Payment received — your credits have been added.");
+        else toast.info("Payment is still processing — credits will appear shortly.");
+      })
+      .catch((e) => toast.error((e as Error).message))
+      .finally(() => {
+        qc.invalidateQueries({ queryKey: ["wallet"] });
+        qc.invalidateQueries({ queryKey: ["ledger"] });
+      });
+  }, [search.checkout]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
       <aside className="h-fit rounded-[1.75rem] border bg-card p-3 shadow-soft">
@@ -61,6 +97,7 @@ function CreditsPage() {
 
 function Overview({ onPackages }: { onPackages: () => void }) {
   const wallet = useWallet();
+  const portal = useServerFn(createBillingPortal);
   const ledger = useLedger(50);
   const w = wallet.data;
   const cover = creditsCover(w?.total ?? 0);
@@ -77,9 +114,16 @@ function Overview({ onPackages }: { onPackages: () => void }) {
                 {plan.name} plan{w?.periodEnd ? ` · renews ${format(new Date(w.periodEnd), "d MMM yyyy")}` : ""}
               </p>
             </div>
-            <Button onClick={onPackages} variant="secondary" className="rounded-full">
-              <Plus className="h-4 w-4" /> Get credits
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button onClick={onPackages} variant="secondary" className="rounded-full">
+                <Plus className="h-4 w-4" /> Get credits
+              </Button>
+              {w?.plan && w.plan !== "free" && (
+                <Button onClick={() => openStripe(() => portal())} variant="secondary" className="rounded-full">
+                  <CreditCard className="h-4 w-4" /> Manage billing
+                </Button>
+              )}
+            </div>
           </div>
           <div className="mt-6 grid grid-cols-3 gap-3">
             {[
@@ -146,6 +190,7 @@ function Overview({ onPackages }: { onPackages: () => void }) {
 function Packages() {
   const [billing, setBilling] = useState<"monthly" | "onetime">("monthly");
   const wallet = useWallet();
+  const checkout = useCheckout();
   const strip =
     billing === "monthly"
       ? [
@@ -219,7 +264,7 @@ function Packages() {
                 ]}
                 cta={current ? "Current plan" : id === "free" ? "Included" : `Subscribe to ${p.name}`}
                 disabled={current || id === "free"}
-                onClick={() => startCheckout(`${p.name} (€${p.priceEur}/month)`)}
+                onClick={() => checkout(id as Product)}
               />
             );
           })}
@@ -241,7 +286,7 @@ function Packages() {
               "Works on any plan, including Free",
             ]}
             cta="Buy"
-            onClick={() => startCheckout(`a ${formatCredits(TOPUP_PACK.credits)}-credit top-up (€${TOPUP_PACK.priceEur})`)}
+            onClick={() => checkout("topup")}
           />
         </div>
       )}
