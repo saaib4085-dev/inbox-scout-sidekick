@@ -13,4 +13,5 @@
 - [x] Settings: signature + brand voice
 - [ ] Stripe subscriptions + top-up checkout (blocked: workspace needs paid plan)
 - [x] Tests for credit rules
-- [ ] Gmail/Outlook mailbox setup (blocked: app connection setup was skipped; mailbox buttons show 'not available yet')
+- [x] Gmail mailbox setup linked
+- [ ] Outlook mailbox setup (blocked: setup card was declined)
