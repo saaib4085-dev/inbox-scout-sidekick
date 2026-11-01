@@ -79,6 +79,8 @@ export type Database = {
           bonus_credits: number
           period_end: string | null
           plan: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
           subscription_credits: number
           topup_credits: number
           updated_at: string
@@ -88,6 +90,8 @@ export type Database = {
           bonus_credits?: number
           period_end?: string | null
           plan?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_credits?: number
           topup_credits?: number
           updated_at?: string
@@ -97,6 +101,8 @@ export type Database = {
           bonus_credits?: number
           period_end?: string | null
           plan?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_credits?: number
           topup_credits?: number
           updated_at?: string
@@ -260,6 +266,24 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_events: {
+        Row: {
+          created_at: string
+          id: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -278,6 +302,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      end_subscription: { Args: { _user_id: string }; Returns: undefined }
       refund_credits: {
         Args: { _ledger_id: string; _user_id: string }
         Returns: undefined
