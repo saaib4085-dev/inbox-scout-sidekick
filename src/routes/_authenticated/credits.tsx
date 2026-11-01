@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
-import { createBillingPortal, createCheckout } from "@/lib/stripe.functions";
+import { confirmCheckout, createBillingPortal, createCheckout } from "@/lib/stripe.functions";
 import { format } from "date-fns";
 import { Check, Clock, CreditCard, LayoutGrid, Package, Plus, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
