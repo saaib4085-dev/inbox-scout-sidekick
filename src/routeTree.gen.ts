@@ -18,6 +18,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedOutboxRouteImport } from './routes/_authenticated/outbox'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiOauthMailReturnRouteImport } from './routes/api/oauth/mail/return'
 
 const IndexRoute = IndexRouteImport.update({
@@ -64,6 +65,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
+  id: '/api/public/stripe-webhook',
+  path: '/api/public/stripe-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiOauthMailReturnRoute = ApiOauthMailReturnRouteImport.update({
   id: '/api/oauth/mail/return',
   path: '/api/oauth/mail/return',
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/leads': typeof AuthenticatedLeadsRoute
   '/outbox': typeof AuthenticatedOutboxRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/oauth/mail/return': typeof ApiOauthMailReturnRoute
 }
 export interface FileRoutesByTo {
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/leads': typeof AuthenticatedLeadsRoute
   '/outbox': typeof AuthenticatedOutboxRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/oauth/mail/return': typeof ApiOauthMailReturnRoute
 }
 export interface FileRoutesById {
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/outbox': typeof AuthenticatedOutboxRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/oauth/mail/return': typeof ApiOauthMailReturnRoute
 }
 export interface FileRouteTypes {
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/leads'
     | '/outbox'
     | '/settings'
+    | '/api/public/stripe-webhook'
     | '/api/oauth/mail/return'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/leads'
     | '/outbox'
     | '/settings'
+    | '/api/public/stripe-webhook'
     | '/api/oauth/mail/return'
   id:
     | '__root__'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/_authenticated/leads'
     | '/_authenticated/outbox'
     | '/_authenticated/settings'
+    | '/api/public/stripe-webhook'
     | '/api/oauth/mail/return'
   fileRoutesById: FileRoutesById
 }
@@ -146,6 +158,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiOauthMailReturnRoute: typeof ApiOauthMailReturnRoute
 }
 
@@ -214,6 +227,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/stripe-webhook': {
+      id: '/api/public/stripe-webhook'
+      path: '/api/public/stripe-webhook'
+      fullPath: '/api/public/stripe-webhook'
+      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/oauth/mail/return': {
       id: '/api/oauth/mail/return'
       path: '/api/oauth/mail/return'
@@ -249,6 +269,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiOauthMailReturnRoute: ApiOauthMailReturnRoute,
 }
 export const routeTree = rootRouteImport
