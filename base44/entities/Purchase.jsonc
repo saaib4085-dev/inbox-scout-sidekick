@@ -1,0 +1,92 @@
+{
+  "name": "Purchase",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "pack_id": {
+      "type": "string"
+    },
+    "pack_name": {
+      "type": "string"
+    },
+    "credits": {
+      "type": "number"
+    },
+    "scrapes": {
+      "type": "number",
+      "description": "Customer scrapes included in this purchase"
+    },
+    "amount_cents": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "default": "EUR"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_payment",
+        "paid",
+        "refunded"
+      ],
+      "default": "pending_payment"
+    },
+    "consent_terms": {
+      "type": "boolean",
+      "description": "Consent to Terms of Service and Privacy Policy"
+    },
+    "consent_withdrawal_waiver": {
+      "type": "boolean",
+      "description": "Express consent to immediate delivery and acknowledgement of the loss of the 14-day EU withdrawal right"
+    },
+    "consent_version": {
+      "type": "string",
+      "description": "Version identifier of the consent text shown at checkout"
+    },
+    "consented_at": {
+      "type": "string"
+    },
+    "stripe_session_id": {
+      "type": "string"
+    },
+    "stripe_payment_intent": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_email",
+    "pack_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

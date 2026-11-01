@@ -1,43 +1,67 @@
-# Inbox Scout Sidekick
+# Base44 Project
 
-Build a full-stack responsive web application for an AI Email Drafter & Smart Reply Assistant ("InboxHero") based on my attached brief, adapting its Node.js/Express backend to Lovable's supported backend.
+Use this repository to run and edit the app locally, then publish changes back through Base44.
 
-"just more rounded no squares rounded squares with a interactive dashobaord and analytics and being able to look into each top page as a full screen" Use the attached dashboard and assistant images as design references, with cyan and white to fit the colour theme. Make the AI text box a small corner at the bottom so I’m able to ask it questions like “draft a email”.
+Any change pushed to the repo will also be reflected in the Base44 Builder.
 
-"All 3" for lead sourcing: drafting only, import lead lists, and in-app lead search. Use an Apify actor for in-app business search. Include CSV import and manual contact entry. Filter out listings with existing website URLs. Users connect their own Gmail or Outlook mailbox, and each email requires individual review before sending.
+## Prerequisites
 
-Replace the draft-count plan pricing in the original brief with this credit system:
-- 1 email generation request costs 50 credits and returns three distinct reply options. Charge per generation request, not per option.
-- 1 AI question costs 50 credits.
-- 1 lead scrape costs 100 credits.
-- Free sign-up bonus: 1,000 credits, one time, never expire, with no monthly refill.
-- Pro: €19/month, 15,000 credits per month.
-- Business: €50/month, 50,000 credits per month.
-- Subscription credits reset each month and unused subscription credits do not roll over.
-- Top-up pack: €10 for 5,000 credits; purchased top-up credits carry over.
-- Set hard spend limits by checking or reserving credits server-side before calling the AI or scraper API; restore credits if a request fails.
+1. Clone the repository using the project's Git URL.
+2. Navigate to the project directory.
+3. Install dependencies: `npm install`.
+4. Install the Base44 CLI: `npm install -g base44@latest`.
+5. Install [Deno](https://docs.deno.com/runtime/getting_started/installation/) — the local Base44 backend runs on it.
 
-Set up Stripe payments for the subscription plans and top-up packs. Make the credit page resemble the attached image in cyan and white, with a separate mini tab for packages. Add points under the balance and package choices explaining what the credits cover, including the monthly reset versus top-up rollover rules.
+Run `base44 --help` (or see the [CLI reference](https://docs.base44.com/developers/references/cli/commands/introduction)) for the full command surface.
 
-Keep the rounded-card interactive dashboard, full-page top-level screens, analytics, and the AI assistant in scope.
+## Run Locally
 
-This project was built with [Lovable](https://lovable.dev).
+Three commands, from the project root:
 
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/a71b068e-d855-4fc2-9b45-d7e06c77c39c).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+```bash
+base44 login   # one-time per machine
+base44 link    # one-time per clone
+base44 dev     # local backend + frontend together
 ```
+
+Open the frontend URL that `base44 dev` prints (typically `http://localhost:5173`).
+
+Notes:
+
+- **Every fresh clone needs `base44 link`.** It writes `base44/.app.jsonc` (the app-id pointer), which is deliberately gitignored. Your app id is in the Builder URL (`app.base44.com/apps/<id>/...`); `base44 link --help` shows the non-interactive flags.
+- **`base44 dev` runs the frontend for you** (via `site.serveCommand` in this repo's `base44/config.jsonc`) — never run `npm run dev` yourself: alone it serves a UI with no backend behind it (`[base44] Proxy not enabled`, every `/api` call fails), and alongside `base44 dev` the second Vite silently takes the next port and you end up looking at the wrong one.
+- **The app must be published at least once for the UI to load under `base44 dev`.** The frontend boots by fetching app settings from the hosted app; before the first publish that fails and every page redirects to login. The local API works regardless.
+- Entities, functions, and auth run locally — entity data is **in-memory only**, wiped when `base44 dev` restarts. Everything else (Core integrations, OAuth login) is forwarded to your deployed app. Full breakdown: [Local development overview](https://docs.base44.com/developers/backend/overview/local-dev/local-development-overview).
+
+## Frontend Only, Hosted Backend
+
+To work on just the frontend against your app's live hosted backend:
+
+```bash
+base44 dev --remote
+```
+
+⚠️ In this mode writes go to your app's **production data** — plain `base44 dev` keeps everything local.
+
+## Publish Your Changes
+
+After pushing your changes to git, open the Base44 dashboard and publish the app:
+
+```bash
+base44 dashboard open
+```
+
+This repo syncs to Base44 through git, so publish from the dashboard rather than `base44 deploy` — a CLI deploy ships your local tree directly, bypassing the sync, and the deployed state silently diverges from the repo.
+
+## Docs & Support
+
+GitHub integration: [https://docs.base44.com/developers/app-code/local-development/github](https://docs.base44.com/developers/app-code/local-development/github)
+
+Local development: [https://docs.base44.com/developers/backend/overview/local-dev/local-development-overview](https://docs.base44.com/developers/backend/overview/local-dev/local-development-overview)
+
+Support: [https://app.base44.com/support](https://app.base44.com/support)
+
+
+---
+
+[![Restore to base44](https://img.shields.io/badge/Restore%20to-BASE44-orange?style=for-the-badge&logo=rocket)](https://app.base44.com/apps)

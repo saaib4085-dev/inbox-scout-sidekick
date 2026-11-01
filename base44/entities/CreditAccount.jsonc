@@ -1,0 +1,68 @@
+{
+  "name": "CreditAccount",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Owner of the credit balance"
+    },
+    "plan": {
+      "type": "string",
+      "default": "free"
+    },
+    "balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Credits available for AI usage and sample drafts"
+    },
+    "scrape_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Customer scrapes available; one scrape per customer found"
+    },
+    "lifetime_purchased": {
+      "type": "number",
+      "default": 0
+    },
+    "lifetime_scraped": {
+      "type": "number",
+      "default": 0
+    },
+    "runs_completed": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

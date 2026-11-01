@@ -1,18 +1,34 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-<!-- LOVABLE:END -->
+# AGENTS.md
 
-## Project rules
-- Credit rules live in `src/lib/credits.ts` (UI + tests) and are enforced in Postgres functions `reserve_credits` / `refund_credits` / `apply_subscription` / `add_topup`; change both together — the DB is the source of truth for spending.
-- Every paid AI or scraper call goes through `withCredits()` in `src/lib/billing.server.ts` so credits are reserved before the call and refunded on failure.
-- Refund/grant DB functions are executable by service_role only, so users cannot mint or refund credits from the browser.
-- AI calls go through `runClaude()` in `src/lib/ai.server.ts` (Lovable AI Gateway, native Messages API, streamed server-side).
-- Per-user Gmail/Outlook sending uses App User Connectors; connection keys are stored encrypted in `app_user_connections` (server-only table). Emails are only sent one at a time from the Outbox after explicit review.
-- Signed-in pages live under `src/routes/_authenticated/` (client-only gate, `ssr: false`).
+## Project Context
+
+This is a Base44 app repository. Treat it as user-owned application code, keep changes focused on the user's request, and preserve existing project conventions.
+
+Start with `README.md` for local setup, environment variables, and publish workflow.
+
+## Base44 References
+
+- CLI overview: https://docs.base44.com/developers/references/cli/get-started/overview.md
+- Agent skills: https://docs.base44.com/developers/backend/overview/skills.md
+
+If your agent supports Agent Skills, install or update Base44 skills before Base44-specific work:
+
+```bash
+npx skills add base44/skills
+```
+
+## Key Files
+
+- `src/`: frontend application source.
+- `src/api/base44Client.js`: frontend Base44 SDK client.
+- `vite.config.js`: Vite config and Base44 Vite plugin setup.
+- `.env.local`: local-only environment values; never commit secrets.
+
+## Working Notes
+
+- Use `base44 dev` as the default local development command when you need the local Base44 backend. It can run the backend and frontend together.
+- When docs or code mention the frontend being started automatically, that usually means the Base44 project config includes `site.serveCommand`, for example `"serveCommand": "npm run dev"` in `base44/config.jsonc`.
+- Use `npm run dev` only for frontend-only work against the hosted Base44 backend.
+- Prefer the existing Base44 CLI workflow over adding new npm scripts for Base44-specific tasks.
+- Reuse the existing SDK client and Vite plugin patterns before adding new Base44 integration paths.
+- Run the relevant checks from `package.json` before finishing code changes.

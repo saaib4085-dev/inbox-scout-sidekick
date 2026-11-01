@@ -1,0 +1,109 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Owner of the lead record"
+    },
+    "name": {
+      "type": "string",
+      "description": "Prospect or company name when no individual is published"
+    },
+    "company": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "description": "Contact address as published on the company's own website; empty when none is public"
+    },
+    "role": {
+      "type": "string"
+    },
+    "intent_score": {
+      "type": "number",
+      "description": "0-100 buying intent score"
+    },
+    "signal": {
+      "type": "string",
+      "description": "The observed buying signal behind the score"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Page the contact address was scraped from"
+    },
+    "draft_subject": {
+      "type": "string"
+    },
+    "draft_body": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "qualified",
+        "archived"
+      ],
+      "default": "new"
+    },
+    "run_brief": {
+      "type": "string",
+      "description": "The buyer brief used for the scouting run"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
