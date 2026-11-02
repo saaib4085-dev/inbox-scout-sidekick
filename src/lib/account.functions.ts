@@ -13,7 +13,7 @@ export const exportMyData = createServerFn({ method: "POST" })
     const uid = context.userId;
     const [profile, wallet, consents, ...rest] = await Promise.all([
       supabaseAdmin.from("profiles").select("*").eq("id", uid).maybeSingle(),
-      supabaseAdmin.from("credit_wallets").select("plan, subscription_credits, bonus_credits, topup_credits, period_end, created_at").eq("user_id", uid).maybeSingle(),
+      supabaseAdmin.from("credit_wallets").select("plan, subscription_credits, bonus_credits, topup_credits, period_end").eq("user_id", uid).maybeSingle(),
       supabaseAdmin.from("purchase_consents").select("*").eq("user_id", uid),
       ...USER_TABLES.map((t) =>
         t === "app_user_connections"
