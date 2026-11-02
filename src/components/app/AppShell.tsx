@@ -7,6 +7,7 @@ import { useWallet } from "@/hooks/use-app-data";
 import { formatCredits } from "@/lib/credits";
 import { Logo } from "./Logo";
 import { AssistantWidget } from "./AssistantWidget";
+import { LegalFooter } from "./LegalFooter";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,9 +97,12 @@ export function AppShell() {
           ))}
         </nav>
       </header>
-      <main className="mx-auto max-w-7xl px-4 pb-32 pt-8 sm:px-6">
+      <main className="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6">
         <Outlet />
       </main>
+      <div className="pb-20">
+        <LegalFooter compact />
+      </div>
       <AssistantWidget />
     </div>
   );
