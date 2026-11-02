@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { CreditPoints } from "@/components/app/PricingInfo";
+import { CheckoutConfirmDialog } from "@/components/app/CheckoutConfirmDialog";
+import { LegalLinks } from "@/components/app/LegalFooter";
 import { useLedger, useWallet } from "@/hooks/use-app-data";
 import { CREDIT_COSTS, PLANS, TOPUP_PACK, creditsCover, formatCredits } from "@/lib/credits";
 import { cn } from "@/lib/utils";
@@ -28,6 +30,7 @@ export const Route = createFileRoute("/_authenticated/credits")({
 
 type Product = "pro" | "business" | "topup";
 
+
 /** Opens Stripe Checkout in a new tab (it can't load inside the editor preview frame). */
 async function openStripe(getUrl: () => Promise<{ url: string } | undefined>) {
   const tab = window.open("", "_blank");
@@ -44,7 +47,8 @@ async function openStripe(getUrl: () => Promise<{ url: string } | undefined>) {
 
 function useCheckout() {
   const checkout = useServerFn(createCheckout);
-  return (product: Product) => openStripe(() => checkout({ data: { product } }));
+  return (product: Product) =>
+    openStripe(() => checkout({ data: { product, waiveWithdrawal: true, adultOrGuardian: true } }));
 }
 
 function CreditsPage() {
@@ -190,7 +194,9 @@ function Overview({ onPackages }: { onPackages: () => void }) {
 function Packages() {
   const [billing, setBilling] = useState<"monthly" | "onetime">("monthly");
   const wallet = useWallet();
-  const checkout = useCheckout();
+  const startCheckout = useCheckout();
+  const [pending, setPending] = useState<Product | null>(null);
+  const checkout = (p: Product) => setPending(p);
   const strip =
     billing === "monthly"
       ? [
@@ -291,10 +297,17 @@ function Packages() {
         </div>
       )}
 
+      <p className="mt-4 text-xs text-muted-foreground">
+        Prices shown are the total you pay — no transaction or card fees added. Credits are delivered instantly, so you'll
+        be asked to waive the 14-day withdrawal right before paying.
+      </p>
+
       <div className="mt-8">
         <h3 className="mb-3 font-semibold">How credits work</h3>
         <CreditPoints columns={3} />
       </div>
+      <LegalLinks className="mt-6 text-xs text-muted-foreground" />
+      <CheckoutConfirmDialog product={pending} onClose={() => setPending(null)} onConfirm={startCheckout} />
     </section>
   );
 }
