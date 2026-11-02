@@ -15,7 +15,7 @@ function encode(obj: Record<string, unknown>, prefix = "", out: string[] = []): 
   return out;
 }
 
-export async function stripeRequest<T = any>(method: "GET" | "POST", path: string, params?: Record<string, unknown>): Promise<T> {
+export async function stripeRequest<T = any>(method: "GET" | "POST" | "DELETE", path: string, params?: Record<string, unknown>): Promise<T> {
   const key = process.env["STRIPE_SECRET_KEY"];
   if (!key) throw new Error("Payments aren't configured yet.");
   const body = params ? encode(params).join("&") : undefined;
