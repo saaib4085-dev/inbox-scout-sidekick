@@ -3,6 +3,7 @@ import { ArrowRight, BarChart3, Bot, Check, Mail, Search, ShieldCheck, Sparkles,
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/app/Logo";
 import { CreditPoints } from "@/components/app/PricingInfo";
+import { LegalFooter } from "@/components/app/LegalFooter";
 import { PLANS, TOPUP_PACK, formatCredits } from "@/lib/credits";
 
 export const Route = createFileRoute("/")({
@@ -136,10 +137,7 @@ function Landing() {
         </div>
       </section>
 
-      <footer className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-10 text-sm text-muted-foreground sm:px-6">
-        <Logo />
-        <p>© {new Date().getFullYear()} InboxHero. Every email is reviewed by you before it sends.</p>
-      </footer>
+      <LegalFooter />
     </div>
   );
 }

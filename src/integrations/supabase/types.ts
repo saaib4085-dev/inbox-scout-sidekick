@@ -266,6 +266,42 @@ export type Database = {
         }
         Relationships: []
       }
+      purchase_consents: {
+        Row: {
+          adult_or_guardian: boolean
+          consent_version: string
+          created_at: string
+          id: string
+          price_eur: number
+          product: string
+          stripe_session_id: string | null
+          user_id: string
+          waived_withdrawal: boolean
+        }
+        Insert: {
+          adult_or_guardian: boolean
+          consent_version: string
+          created_at?: string
+          id?: string
+          price_eur: number
+          product: string
+          stripe_session_id?: string | null
+          user_id: string
+          waived_withdrawal: boolean
+        }
+        Update: {
+          adult_or_guardian?: boolean
+          consent_version?: string
+          created_at?: string
+          id?: string
+          price_eur?: number
+          product?: string
+          stripe_session_id?: string | null
+          user_id?: string
+          waived_withdrawal?: boolean
+        }
+        Relationships: []
+      }
       stripe_events: {
         Row: {
           created_at: string

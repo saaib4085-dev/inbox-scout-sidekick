@@ -15,3 +15,6 @@
 - [x] Tests for credit rules
 - [x] Gmail mailbox setup linked
 - [ ] Outlook mailbox setup (blocked: setup card was declined)
+- [x] Legal compliance (Lovable version): Privacy/Terms/Refund pages + footer links, checkout price summary with 14-day waiver and 18+/guardian boxes, consent records, data download + account deletion
+- [ ] Decide which site version is live (blocked: Base44 sync on 1 Nov replaced the running app; waiting on owner)
+- [ ] Real owner name, business address and support email for legal pages (waiting on owner)

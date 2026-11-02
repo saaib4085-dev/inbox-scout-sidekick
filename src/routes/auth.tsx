@@ -126,6 +126,12 @@ function AuthPage() {
                   {busy ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
                 </Button>
               </form>
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                By continuing you agree to our{" "}
+                <Link to="/terms" className="font-semibold text-primary-deep">Terms of Service</Link> and{" "}
+                <Link to="/privacy" className="font-semibold text-primary-deep">Privacy Policy</Link>. Under 18? You need a
+                parent or guardian's consent to make purchases.
+              </p>
               <p className="mt-6 text-center text-sm text-muted-foreground">
                 {mode === "signup" ? "Already have an account?" : "New to InboxHero?"}{" "}
                 <button className="font-semibold text-primary-deep" onClick={() => setMode(mode === "signup" ? "signin" : "signup")}>

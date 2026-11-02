@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/AppShell";
 import { MailboxConnections } from "@/components/app/MailboxConnections";
+import { YourData } from "@/components/app/YourData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -81,6 +82,7 @@ function SettingsPage() {
         <p className="mb-4 text-sm text-muted-foreground">Connect your own Gmail or Outlook. Every email still needs your review before it sends.</p>
         <MailboxConnections />
       </section>
+      <YourData />
     </div>
   );
 }
